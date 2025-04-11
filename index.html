@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Found You!</title>
+  <style>
+    body {
+      background-color: #fdf6e3;
+      font-family: Arial, sans-serif;
+      color: #333;
+      text-align: center;
+      padding-top: 10%;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    #info {
+      font-size: 1.3em;
+      color: #005f73;
+      margin-bottom: 2em;
+    }
+    #law {
+      margin-top: 3em;
+      font-size: 1.2em;
+    }
+    #location {
+      font-weight: bold;
+      color: #c1121f;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your IP Address and Location:</h1>
+  <div id="info">Loading...</div>
+
+  <div id="law">Has been forwarded to local law enforcement in:<br><span id="location">...</span></div>
+
+  <script>
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        const ipInfo = `IP: ${data.ip}  
+Location: ${data.city}, ${data.region}, ${data.country_name}`;
+        document.getElementById('info').textContent = ipInfo;
+
+        const locationText = `${data.city}, ${data.region}, ${data.country_name}`;
+        document.getElementById('location').textContent = locationText;
+      })
+      .catch(() => {
+        document.getElementById('info').textContent = "Unable to fetch location info.";
+        document.getElementById('location').textContent = "an unknown location.";
+      });
+  </script>
+</body>
+</html>
