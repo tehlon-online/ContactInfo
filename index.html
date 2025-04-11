@@ -14,41 +14,55 @@
       font-size: 2em;
       margin-bottom: 1em;
     }
-    #info {
-      font-size: 1.3em;
+    #ip {
+      font-size: 1.5em;
       color: #005f73;
       margin-bottom: 2em;
     }
     #law {
-      margin-top: 3em;
       font-size: 1.2em;
     }
     #location {
       font-weight: bold;
       color: #c1121f;
+      display: block;
+      margin-top: 0.5em;
     }
   </style>
 </head>
 <body>
-  <h1>Your IP Address and Location:</h1>
-  <div id="info">Loading...</div>
+  <h1>Your IP Address of:</h1>
+  <div id="ip">Loading...</div>
 
-  <div id="law">Has been forwarded to local law enforcement in:<br><span id="location">...</span></div>
+  <div id="law">
+    has been forwarded to local law enforcement
+    <span id="location">...</span>
+  </div>
 
   <script>
-    fetch('https://ipapi.co/json/')
-      .then(res => res.json())
-      .then(data => {
-        const ipInfo = `IP: ${data.ip}  
-Location: ${data.city}, ${data.region}, ${data.country_name}`;
-        document.getElementById('info').textContent = ipInfo;
+    let userIP = "Unknown";
 
-        const locationText = `${data.city}, ${data.region}, ${data.country_name}`;
-        document.getElementById('location').textContent = locationText;
+    // Step 1: Get the IP address
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        userIP = data.ip;
+        document.getElementById('ip').textContent = userIP;
+
+        // Step 2: Try to fetch location using ipapi
+        return fetch(`https://ipapi.co/${userIP}/json/`);
       })
-      .catch(() => {
-        document.getElementById('info').textContent = "Unable to fetch location info.";
-        document.getElementById('location').textContent = "an unknown location.";
+      .then(response => {
+        if (!response.ok) throw new Error("Location fetch failed");
+        return response.json();
+      })
+      .then(location => {
+        const locText = `${location.city}, ${location.region}, ${location.country_name}`;
+        document.getElementById('location').textContent = locText;
+      })
+      .catch(error => {
+        console.warn("Location lookup failed:", error);
+        document.getElementById('location').textContent = "Have a great day :-)";
       });
   </script>
 </body>
